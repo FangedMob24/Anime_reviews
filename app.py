@@ -1,8 +1,9 @@
 import os
 
-from flask import Flask, render_template, request, redirect, session, g
+from flask import Flask, render_template, request, redirect, session, g, flash
 from sqlalchemy.exc import IntegrityError
 import requests
+from forms import NewUserForm, LoginForm
 
 from models import db, connect_db, User, Review
 
@@ -27,6 +28,77 @@ def default():
 
 #######################
 # User signup/login/logout
+
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global"""
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
+    else:
+        g.user = None
+
+def do_login(user):
+    """log in user"""
+    session[CURR_USER_KEY] = user.username
+
+def do_logout():
+    """Logout user"""
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+
+@app.route('/account/signup', methods=['GET','POST'])
+def user_signup():
+    """gets a form to sign up user"""
+
+    form = NewUserForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.sign(
+                username=form.username.data,
+                password=form.password.data,
+                email=form.email.data,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                liked_genres='/'.join(form.liked_genres.data)
+            )
+            db.session.commit()
+
+        except IntegrityError:
+            return render_template('account/signup.html',form=form)
+        
+        do_login(user)
+        
+        return redirect('/')
+        
+    else:
+        return render_template('account/signup.html', form=form)
+    
+@app.route('/account/login', methods=["GET", "POST"])
+def login():
+    """Handle user login."""
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+
+        if user:
+            do_login(user)
+            flash(f"Hello, {user.username}!", "success")
+            return redirect("/")
+
+        flash("Invalid credentials.", 'danger')
+
+    return render_template('account/login.html', form=form)
+    
+@app.route('/account/logout')
+def logout():
+    """Handle logout of user"""
+    do_logout()
+    flash("successful logout")
+    return redirect("/account/login")
 
 #######################
 # General routes

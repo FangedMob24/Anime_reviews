@@ -6,7 +6,7 @@
         {% for show in anime.data %}
             <div class="col">
                 <p class="anime-title"> <a class="link-body-emphasis link-offset-2 link-underline-opacity-0 link-underline-opacity-75-hover text-center"
-                     href="/anime/{{ show.mal_id}}">{{ show.title_english }}</a> </p>
+                     href="/anime/{{ show.mal_id}}">{{ show.title }}</a> </p>
                 <img class="anime-img" src="{{show.images.jpg.image_url}}">
             </div>
         {% endfor %}

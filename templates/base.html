@@ -38,16 +38,15 @@
       </li>
       {% endif %}
       {% if not g.user %}
-      <li><a href="/signup">Sign up</a></li>
-      <li><a href="/login">Log in</a></li>
+      <li><a href="/account/signup">Sign up</a></li>
+      <li><a href="/account/login">Log in</a></li>
       {% else %}
       <li>
-        <a href="/users/{{ g.user.id }}">
-          <img src="{{ g.user.image_url }}" alt="{{ g.user.username }}">
+        <a href="/account/{{ g.user.username }}">
+          <li>{{ g.user.username }}</li>
         </a>
       </li>
-      <li><a href="/messages/new">New Message</a></li>
-      <li><a href="/logout">Log out</a></li>
+      <li><a href="account/logout">Log out</a></li>
       {% endif %}
     </ul>
   </div>
