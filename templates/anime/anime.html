@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
     <h1> {{ anime.data.title }} </h1>
     <img src="{{ anime.data.images.jpg.large_image_url }}">
     <h3>Synopsis</h3>
     <p> {{ anime.data.synopsis }}</p>
+    
 {% endblock %}

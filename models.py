@@ -83,7 +83,7 @@ class User(db.Model):
     )
 
     def __repr__(self):
-        return f"<User #{self.username}: {self.first_name}, {self.last_name}"
+        return f"<User #{self.username}: {self.first_name}, {self.last_name}>"
     
     def fav_genre_list(self):
         """gets the genres liked and returns as a list"""

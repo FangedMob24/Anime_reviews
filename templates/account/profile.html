@@ -1,1 +1,40 @@
 {% extends 'base.html' %}
+
+{% block content %}
+
+<h1> {{ user.username}} </h1>
+<div class="container text-center list-group">
+    <div class="row">
+        <div class="col list-group-item">
+            First Name
+        </div>
+        <div class="col list-group-item">
+            {{ user.first_name }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col list-group-item">
+            Last Name
+        </div>
+        <div class="col list-group-item">
+            {{ user.last_name }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col list-group-item">
+            Email
+        </div>
+        <div class="col list-group-item">
+            {{ user.email }}
+        </div>
+    </div>    
+</div>
+
+<div class="container list-group">
+    <li class="list-group-item display-4">Favorite Genres</li>
+    {% for genre in user.fav_genre_list() %}
+        <a href="#" class="list-group-item list-group-item-action">{{ genre }}</a>
+    {% endfor %}
+</div>
+
+{% endblock %}

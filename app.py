@@ -60,7 +60,7 @@ def user_signup():
                 email=form.email.data,
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
-                liked_genres='/'.join(form.liked_genres.data)
+                liked_genres=form.liked_genres.data
             )
             db.session.commit()
 
@@ -99,6 +99,16 @@ def logout():
     do_logout()
     flash("successful logout")
     return redirect("/account/login")
+
+#######################
+# Account routes
+
+@app.route('/account/<username>')
+def profile(username):
+    """User page"""
+    user = User.query.get_or_404(username)
+
+    return render_template('account/profile.html',user=user)
 
 #######################
 # General routes
