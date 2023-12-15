@@ -7,15 +7,37 @@
     <h2 class="join-message">Join Anime Reviews today.</h2>
     <form method="POST" id="account_form">
       {{ form.hidden_tag() }}
-      
+        {% if form.username.errors %}
+          <div>{{ form.username.errors }}</div>
+        {% endif %}
         <div>{{ form.username.label }} : {{ form.username }}</div>
+
+        {% if form.password.errors %}
+          <div>{{ form.password.errors }}</div>
+        {% endif %}
         <div>{{ form.password.label }} : {{ form.password }}</div>
+
+        {% if form.email.errors %}
+          <div>{{ form.email.errors }}</div>
+        {% endif %}
         <div>{{ form.email.label }} : {{ form.email }}</div>
+
+        {% if form.first_name.errors %}
+          <div>{{ form.first_name.errors }}</div>
+        {% endif %}
         <div>{{ form.first_name.label }} : {{ form.first_name }}</div>
+
+        {% if form.last_name.errors %}
+          <div>{{ form.last_name.errors }}</div>
+        {% endif %}
         <div>{{ form.last_name.label }} : {{ form.last_name }}</div>
+
+        <!-- {% if form.liked_genres.errors %} -->
+          <div>{{ form.liked_genres.errors }}</div>
+        <!-- {% endif %} -->
         <div>{{ form.liked_genres.label }} : {{ form.liked_genres }}</div>
 
-      <button class="btn btn-primary btn-lg btn-block">Sign me up!</button>
+      <button type="submit" class="btn btn-primary btn-lg btn-block">Sign me up!</button>
     </form>
   </div>
 </div>

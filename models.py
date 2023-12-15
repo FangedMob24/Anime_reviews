@@ -34,6 +34,18 @@ class Review(db.Model):
         'User', backref = 'reviews'
     )
 
+    @classmethod
+    def reviewing(cls, username, comment, rating, anime_id):
+        review = Review(
+            username=username,
+            anime_id=anime_id,
+            rating=rating,
+            comment=comment or ''
+        )
+        print(review)
+
+        db.session.add(review)
+        return review
 
 
 class User(db.Model):
@@ -87,15 +99,23 @@ class User(db.Model):
     
     def fav_genre_list(self):
         """gets the genres liked and returns as a list"""
-        return self.liked_genres.rsplit(", ")
+        genre_str = self.liked_genres.rsplit(", ")
+
+        return [int(x) for x in genre_str]
     
     def fav_vc_list(self):
         """gets the Voice Actors liked and returns as a list"""
-        return self.liked_va.rsplit(", ")
+        if self.liked_va:
+            return self.liked_va.rsplit(", ")
+        
+        return []
     
     def bookmark_anime_list(self):
         """gets the bookmarked anime and returns as a list"""
-        return self.bookmarks.rsplit(", ")
+        if self.bookmarks:
+            return self.bookmarks.rsplit(", ")
+        
+        return []
     
     @classmethod
     def sign(cls, username, email, first_name, last_name, password, liked_genres):
@@ -142,7 +162,15 @@ class User(db.Model):
 
         return user
 
+    @classmethod
+    def bookmark_it(cls, username, bookmarks):
+        user = cls.query.filter_by(username=username).first()
 
+        joined = ", ".join(bookmarks)
+
+        user.bookmarks = joined
+
+        return user
 
 def connect_db(app):
     """Connect this database to provided Flask app."""

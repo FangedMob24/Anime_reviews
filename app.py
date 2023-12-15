@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request, redirect, session, g, flash
 from sqlalchemy.exc import IntegrityError
 import requests
-from forms import NewUserForm, LoginForm
+from forms import NewUserForm, LoginForm, ReviewForm
 
 from models import db, connect_db, User, Review
 
@@ -63,8 +63,8 @@ def user_signup():
                 liked_genres=form.liked_genres.data
             )
             db.session.commit()
-
         except IntegrityError:
+            print("work")
             return render_template('account/signup.html',form=form)
         
         do_login(user)
@@ -108,7 +108,15 @@ def profile(username):
     """User page"""
     user = User.query.get_or_404(username)
 
-    return render_template('account/profile.html',user=user)
+    genres = requests.get('https://api.jikan.moe/v4/genres/anime')
+
+    animes = []
+
+    for bookmark in user.bookmark_anime_list():
+        anime = requests.get(f'https://api.jikan.moe/v4/anime/{bookmark}')
+        animes.append(anime.json())
+
+    return render_template('account/profile.html',user=user, animes=animes, genres=genres.json())
 
 #######################
 # General routes
@@ -118,18 +126,76 @@ def anime_pg(anime_id):
     """brings up the specific anime"""
     anime = requests.get(f'https://api.jikan.moe/v4/anime/{anime_id}')
 
-    return render_template('anime/anime.html', anime=anime.json())
+    reviews = Review.query.filter(Review.anime_id == anime_id).all()
+
+    return render_template('anime/anime.html', anime=anime.json(), reviews=reviews)
 
 @app.route('/anime/search')
 def anime_query():
     search = request.args.get('q')
+    genre = request.args.get('genres')
     page = request.args.get('page') or 1
 
-    p = {'q':search, 'page':page}
+    p = {'page':page}
+
+    if genre:
+        print(genre)
+        p['genres'] = int(genre)
+    if search:
+        p['q'] = search
 
     animes = requests.get('https://api.jikan.moe/v4/anime',params=p)
     
     return render_template('anime/search.html',animes=animes.json(),search=search)
+
+@app.route('/anime/<int:anime_id>/bookmark', methods=["GET","POST"])
+def bookmark(anime_id):
+    """Bookmark fav anime"""
+    bookmarks = g.user.bookmark_anime_list()
+    
+    if str(anime_id) in bookmarks:
+        bookmarks.remove(str(anime_id))
+        user = User.bookmark_it(g.user.username,bookmarks)
+    else:
+        bookmarks.append(str(anime_id))
+        user = User.bookmark_it(g.user.username,bookmarks)
+    
+    db.session.commit()
+
+    return redirect(f'/anime/{anime_id}')
+
+#######################
+# Review Routes
+
+@app.route('/anime/<int:anime_id>/review', methods=["GET", "POST"])
+def review(anime_id):
+    """Handle user login."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    anime = requests.get(f'https://api.jikan.moe/v4/anime/{anime_id}')
+
+    form = ReviewForm()
+
+    if form.validate_on_submit():
+        try:
+            review = Review.reviewing(
+                username=g.user.username,
+                anime_id=anime_id,
+                rating=form.rate.data,
+                comment=form.comment.data,
+            )
+            print(review)
+            db.session.commit()
+
+        except IntegrityError:
+            return render_template('anime/review.html',form=form, anime=anime.json())
+        
+        return redirect(f'/anime/{anime_id}')
+    else:
+        return render_template('anime/review.html', form=form, anime=anime.json())
 
 #######################
 # Home page
@@ -138,7 +204,12 @@ def anime_query():
 def home_page():
     """home page of the site"""
     anime = requests.get('https://api.jikan.moe/v4/anime')
-    return render_template('home.html', anime=anime.json())
+    
+    if g.user:
+        p = {'genres': g.user.fav_genre_list()}
+        rec_anime = requests.get('https://api.jikan.moe/v4/anime',params=p)
+
+    return render_template('home.html', anime=anime.json(), rec_anime=rec_anime.json())
 
 #######################
 # Turn of caching in flask

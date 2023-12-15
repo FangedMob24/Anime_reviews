@@ -1,10 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <div class="container text-center">
+        <div class="row g-2">
+            <div class="col-4">
+                <h1> {{ anime.data.title }} </h1>
+                <img class="image-fluid" src="{{ anime.data.images.jpg.large_image_url }}">
+            </div>
+            <div class="col-4">
+                <h3>Synopsis</h3>
+                <p> {{ anime.data.synopsis }}</p>
+            </div>
+        </div>
+    </div>
 
-    <h1> {{ anime.data.title }} </h1>
-    <img src="{{ anime.data.images.jpg.large_image_url }}">
-    <h3>Synopsis</h3>
-    <p> {{ anime.data.synopsis }}</p>
     
+    
+    <a class="btn btn-primary" href="/anime/{{ anime.data.mal_id }}/bookmark" role="button">Bookmark</a>
+    
+    <a class="btn btn-primary" href="/anime/{{ anime.data.mal_id }}/review" role="button">Review</a>
+    
+    {% if reviews %}
+        <div>
+            <div class="container text-center list-group">
+                <div class="row align-items-start">
+                    <div class="col list-group-item">
+                        User
+                    </div>
+                    <div class="col list-group-item">
+                        Rating
+                    </div>
+                    <div class="col list-group-item">
+                        Comment
+                    </div>
+                </div>
+                {% for review in reviews %}
+                    <div class="row align-items-center">
+                        <div class="col list-group-item">
+                            {{ review.username }}
+                        </div>
+                        <div class="col list-group-item">
+                            {{ review.rating }}
+                        </div>
+                        <div class="col list-group-item">
+                            {{ review.comment}}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
