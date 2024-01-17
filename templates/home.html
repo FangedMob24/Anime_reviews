@@ -13,18 +13,20 @@
             {% endfor %}
         </div>
     {% endfor %}
-    <h2>User Recomended</h2>
-    {% for x in range(0,25,5) %}
-        <div class="row justify-content-evenly">
-            {% for y in range(x,x+5) if rec_anime['data'][y] %}
-                <div class="col-2">
-                    <p class="anime-title text-truncate" style="max-width:20vw"> <a class="link-body-emphasis link-offset-2 link-underline-opacity-0 link-underline-opacity-75-hover text-center"
-                        href="/anime/{{ rec_anime['data'][y].mal_id}}">{{ rec_anime['data'][y].title }}</a> </p>
-                    <img class="anime-img img-fluid" src="{{rec_anime['data'][y].images.jpg.image_url}}">
-                </div>
-            {% endfor %}
-        </div>
-    {% endfor %}
+    {% if rec_anime['user'] %}
+        <h2>User Recomended</h2>
+        {% for x in range(0,25,5) %}
+            <div class="row justify-content-evenly">
+                {% for y in range(x,x+5) if rec_anime['data'][y] %}
+                    <div class="col-2">
+                        <p class="anime-title text-truncate" style="max-width:20vw"> <a class="link-body-emphasis link-offset-2 link-underline-opacity-0 link-underline-opacity-75-hover text-center"
+                            href="/anime/{{ rec_anime['data'][y].mal_id}}">{{ rec_anime['data'][y].title }}</a> </p>
+                        <img class="anime-img img-fluid" src="{{rec_anime['data'][y].images.jpg.image_url}}">
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% endif %}
 </div>
 
 

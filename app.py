@@ -187,7 +187,6 @@ def review(anime_id):
                 rating=form.rate.data,
                 comment=form.comment.data,
             )
-            print(review)
             db.session.commit()
 
         except IntegrityError:
@@ -208,8 +207,12 @@ def home_page():
     if g.user:
         p = {'genres': g.user.fav_genre_list()}
         rec_anime = requests.get('https://api.jikan.moe/v4/anime',params=p)
+        user_dict = rec_anime.json()
+        user_dict['user'] = True
+    else:
+        user_dict = {'user': False}
 
-    return render_template('home.html', anime=anime.json(), rec_anime=rec_anime.json())
+    return render_template('home.html', anime=anime.json(), rec_anime=user_dict)
 
 #######################
 # Turn of caching in flask

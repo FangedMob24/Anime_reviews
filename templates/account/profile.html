@@ -3,6 +3,7 @@
 {% block content %}
 
 <h1> {{ user.username}} </h1>
+
 <div class="container text-center list-group">
     <div class="row">
         <div class="col list-group-item">
@@ -28,27 +29,29 @@
             {{ user.email }}
         </div>
     </div>    
-</div>
 
-<div class="container text-center list-group">
     <li class="list-group-item display-4">Favorite Genres</li>
+    
     {% for genre in user.fav_genre_list() %}
         {% for mal_genre in genres['data'] %}
             {% if mal_genre.mal_id == genre %}
-                <form action="/anime/search">
-                    <input name="genres" id="{{ mal_genre.name }}" value="{{genre}}" type="submit" hidden>
-                    <label class="form-control" for="{{ mal_genre.name }}">{{ mal_genre.name }}</label>
-                </form>
+                <div class="row">
+                    <form action="/anime/search">
+                        <input name="genres" id="{{ mal_genre.name }}" value="{{genre}}" type="submit" hidden>
+                        <label class="form-control" for="{{ mal_genre.name }}">{{ mal_genre.name }}</label>
+                    </form>
+                </div>
             {% endif %}
         {% endfor %}
     {% endfor %}
-</div>
+    
 
-<div class="container text-center list-group">
     <li class="list-group-item display-4"> Bookmark </li>
     {% for anime in animes %}
-    <a href="/anime/{{anime.data.mal_id}}" class="list-group-item list-group-item-action">{{ anime.data.title }}</a>
+        <a href="/anime/{{anime.data.mal_id}}" class="list-group-item list-group-item-action">{{ anime.data.title }}</a>
     {% endfor %}
+
+
 </div>
 
 {% endblock %}

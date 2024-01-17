@@ -9,13 +9,9 @@ class Review(db.Model):
     
     __tablename__ = 'reviews'
     
-    id = db.Column(
-        db.Integer,
-        primary_key=True,
-        autoincrement=True
-    )
     anime_id = db.Column(
         db.Integer,
+        primary_key = True,
         nullable=False
     )
     rating = db.Column(
@@ -28,6 +24,7 @@ class Review(db.Model):
     username = db.Column(
         db.Text,
         db.ForeignKey('users.username', ondelete='cascade'),
+        primary_key = True,
         nullable=False
     )
     users = db.relationship(
@@ -36,13 +33,17 @@ class Review(db.Model):
 
     @classmethod
     def reviewing(cls, username, comment, rating, anime_id):
-        review = Review(
-            username=username,
-            anime_id=anime_id,
-            rating=rating,
-            comment=comment or ''
-        )
-        print(review)
+        if cls.query.filter_by(username=username,anime_id=anime_id):
+            review = cls.query.filter_by(username=username,anime_id=anime_id).first()
+            review.rating = rating or review.rating
+            review.comment = comment or review.comment
+        else:
+            review = Review(
+                username=username,
+                anime_id=anime_id,
+                rating=rating,
+                comment=comment or ''
+            )
 
         db.session.add(review)
         return review
