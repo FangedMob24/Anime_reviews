@@ -1,4 +1,7 @@
-# Anime_reviews
+# anime-review-bookmark
+
+https://anime-review-bookmark.onrender.com
+
 A simple database-driven website for bookmarking and reviewing anime.
 
 Api: https://docs.api.jikan.moe/
